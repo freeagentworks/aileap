@@ -79,8 +79,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: '/images/og/default.png',
-        width: 1456,
-        height: 816,
+        width: 1536,
+        height: 1024,
         alt: 'AILEAP - AI教育・導入支援',
       },
     ],
