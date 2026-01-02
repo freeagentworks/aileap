@@ -3,7 +3,6 @@
 import { Suspense, useRef, useEffect, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Preload } from '@react-three/drei'
-import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
 import * as THREE from 'three'
 import { NeuralNetwork } from './NeuralNetwork'
 import { Particles } from './Particles'
@@ -57,27 +56,8 @@ function CameraAnimation() {
   return null
 }
 
-// ポストプロセッシング（Bloom効果 - 暖色が映えるように調整）
-function Effects() {
-  return (
-    <EffectComposer>
-      <Bloom
-        intensity={0.9}
-        luminanceThreshold={0.15}
-        luminanceSmoothing={0.9}
-        mipmapBlur
-      />
-      <Vignette
-        offset={0.3}
-        darkness={0.6}
-        eskil={false}
-      />
-    </EffectComposer>
-  )
-}
-
 /**
- * 強化版Three.jsシーン
+ * Three.jsシーン
  * 実際のニューロンイメージング風の暖色系ライティング
  */
 export function Scene({ className }: SceneProps) {
@@ -107,7 +87,7 @@ export function Scene({ className }: SceneProps) {
   }
 
   return (
-    <div ref={containerRef} className={className}>
+    <div ref={containerRef} className={className} style={{ position: 'relative' }}>
       <Canvas
         camera={{
           position: [0, 0, 6],
@@ -121,7 +101,7 @@ export function Scene({ className }: SceneProps) {
           alpha: true,
           powerPreference: 'high-performance',
           toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 1.2,
+          toneMappingExposure: 1.3,
         }}
         style={{
           position: 'absolute',
@@ -159,9 +139,6 @@ export function Scene({ className }: SceneProps) {
           
           {/* 背景パーティクル */}
           <Particles count={isMobile ? 300 : 600} />
-          
-          {/* ポストプロセッシング */}
-          {!isMobile && <Effects />}
           
           <Preload all />
         </Suspense>
