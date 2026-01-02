@@ -11,7 +11,7 @@ interface SceneProps {
   className?: string
 }
 
-// 環境グロー（背景のソフトな暖色光）
+// 環境グロー（背景のソフトな水色光）
 function AmbientGlow() {
   const meshRef = useRef<THREE.Mesh>(null)
   
@@ -19,7 +19,6 @@ function AmbientGlow() {
     if (!meshRef.current) return
     const time = state.clock.getElapsedTime()
     
-    // ゆっくりとした脈動
     const scale = 1 + Math.sin(time * 0.3) * 0.1
     meshRef.current.scale.setScalar(scale)
   })
@@ -28,9 +27,9 @@ function AmbientGlow() {
     <mesh ref={meshRef} position={[0, 0, -5]}>
       <sphereGeometry args={[8, 32, 32]} />
       <meshBasicMaterial
-        color="#FF6B00"
+        color="#00D4FF"
         transparent
-        opacity={0.025}
+        opacity={0.02}
         side={THREE.BackSide}
       />
     </mesh>
@@ -45,11 +44,9 @@ function CameraAnimation() {
   useFrame((state) => {
     const time = state.clock.getElapsedTime()
     
-    // 微細な揺れ
     camera.position.x = initialPosition.current.x + Math.sin(time * 0.2) * 0.1
     camera.position.y = initialPosition.current.y + Math.cos(time * 0.15) * 0.1
     
-    // 常に中心を見る
     camera.lookAt(0, 0, 0)
   })
 
@@ -58,7 +55,7 @@ function CameraAnimation() {
 
 /**
  * Three.jsシーン
- * 実際のニューロンイメージング風の暖色系ライティング
+ * 水色クリスタル + マゼンタ核のニューロン
  */
 export function Scene({ className }: SceneProps) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -66,7 +63,6 @@ export function Scene({ className }: SceneProps) {
   const [isReady, setIsReady] = useState(false)
 
   useEffect(() => {
-    // クライアントサイドでのみ実行
     setIsMobile(window.innerWidth < 768)
     setIsReady(true)
     
@@ -113,16 +109,18 @@ export function Scene({ className }: SceneProps) {
         }}
       >
         <Suspense fallback={null}>
-          {/* 基本ライティング - 暖色系 */}
+          {/* 基本ライティング */}
           <ambientLight intensity={0.15} />
           
-          {/* メインライト - 白（ニュートラル） */}
+          {/* メインライト - 白 */}
           <pointLight position={[10, 10, 10]} intensity={0.25} color="#FFFFFF" />
           
-          {/* 暖色アクセントライト */}
-          <pointLight position={[-8, 5, -5]} intensity={0.3} color="#FF6B00" />
-          <pointLight position={[5, -8, 5]} intensity={0.25} color="#FF1493" />
-          <pointLight position={[0, 8, 3]} intensity={0.2} color="#FFB800" />
+          {/* 水色アクセントライト */}
+          <pointLight position={[-8, 5, -5]} intensity={0.3} color="#00D4FF" />
+          <pointLight position={[5, -8, 5]} intensity={0.25} color="#40E0D0" />
+          
+          {/* ピンクアクセントライト */}
+          <pointLight position={[0, 8, 3]} intensity={0.15} color="#FF69B4" />
           
           {/* カメラアニメーション */}
           <CameraAnimation />

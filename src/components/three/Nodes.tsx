@@ -10,8 +10,9 @@ interface NodesProps {
 }
 
 /**
- * リアルなニューロン風ノードコンポーネント
- * 核（中心）は明るく、細胞膜（周囲）は半透明
+ * ニューロン風ノードコンポーネント
+ * 核: マゼンタ/ピンク
+ * 細胞部分: 水色クリスタル
  */
 export function Nodes({ positions, mouseInfluence = 0.5 }: NodesProps) {
   const nucleusRef = useRef<THREE.InstancedMesh>(null)
@@ -33,23 +34,56 @@ export function Nodes({ positions, mouseInfluence = 0.5 }: NodesProps) {
 
   const dummy = useMemo(() => new THREE.Object3D(), [])
   
-  // 核マテリアル（中心 - 明るく不透明）
+  // 核マテリアル（中心 - マゼンタ/ピンク）
   const nucleusMaterial = useMemo(() => {
-    return new THREE.MeshBasicMaterial({
-      color: new THREE.Color('#FFFFFF'),
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        time: { value: 0 },
+        color1: { value: new THREE.Color('#FF69B4') }, // ホットピンク
+        color2: { value: new THREE.Color('#FF1493') }, // ディープピンク
+      },
+      vertexShader: `
+        varying vec3 vNormal;
+        
+        void main() {
+          vNormal = normalize(normalMatrix * normal);
+          gl_Position = projectionMatrix * modelViewMatrix * instanceMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform float time;
+        uniform vec3 color1;
+        uniform vec3 color2;
+        varying vec3 vNormal;
+        
+        void main() {
+          float fresnel = dot(vNormal, vec3(0.0, 0.0, 1.0));
+          fresnel = pow(fresnel, 1.2);
+          
+          float pulse = 0.9 + 0.1 * sin(time * 2.0);
+          
+          // 中心が明るいピンク、エッジがディープピンク
+          vec3 color = mix(color2, color1, fresnel * pulse);
+          
+          // 中心に白いハイライト
+          color = mix(color, vec3(1.0, 0.9, 0.95), pow(fresnel, 3.0) * 0.5);
+          
+          gl_FragColor = vec4(color, 0.95);
+        }
+      `,
       transparent: true,
-      opacity: 0.95,
+      depthWrite: true,
     })
   }, [])
 
-  // 細胞質マテリアル（中間層 - 半透明のグロー）
+  // 細胞質マテリアル（中間層 - 水色クリスタル）
   const cytoplasmMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: {
         time: { value: 0 },
-        color1: { value: new THREE.Color('#FF1493') },
-        color2: { value: new THREE.Color('#FF6B00') },
-        color3: { value: new THREE.Color('#FFB800') },
+        color1: { value: new THREE.Color('#00BFFF') }, // ディープスカイブルー
+        color2: { value: new THREE.Color('#00D4FF') }, // シアン
+        color3: { value: new THREE.Color('#40E0D0') }, // ターコイズ
       },
       vertexShader: `
         varying vec3 vNormal;
@@ -73,7 +107,8 @@ export function Nodes({ positions, mouseInfluence = 0.5 }: NodesProps) {
           float fresnel = 1.0 - abs(dot(vNormal, vec3(0.0, 0.0, 1.0)));
           fresnel = pow(fresnel, 1.5);
           
-          float t = sin(time * 0.3 + vPosition.x * 0.5 + vPosition.y * 0.3) * 0.5 + 0.5;
+          // 色のグラデーション
+          float t = sin(time * 0.4 + vPosition.x * 0.5 + vPosition.y * 0.3) * 0.5 + 0.5;
           vec3 color;
           if (t < 0.5) {
             color = mix(color1, color2, t * 2.0);
@@ -81,7 +116,11 @@ export function Nodes({ positions, mouseInfluence = 0.5 }: NodesProps) {
             color = mix(color2, color3, (t - 0.5) * 2.0);
           }
           
-          float alpha = fresnel * 0.5 + 0.15;
+          // クリスタルのような輝き
+          float sparkle = pow(fresnel, 2.0) * 0.3;
+          color += vec3(sparkle);
+          
+          float alpha = fresnel * 0.55 + 0.1;
           
           gl_FragColor = vec4(color, alpha);
         }
@@ -93,12 +132,12 @@ export function Nodes({ positions, mouseInfluence = 0.5 }: NodesProps) {
     })
   }, [])
 
-  // 細胞膜マテリアル（最外層 - 非常に透明な膜）
+  // 細胞膜マテリアル（最外層 - 薄い水色の膜）
   const membraneMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: {
         time: { value: 0 },
-        color: { value: new THREE.Color('#FF8C69') },
+        color: { value: new THREE.Color('#87CEEB') }, // スカイブルー
       },
       vertexShader: `
         varying vec3 vNormal;
@@ -122,7 +161,7 @@ export function Nodes({ positions, mouseInfluence = 0.5 }: NodesProps) {
           
           float pulse = 0.8 + 0.2 * sin(time * 1.5 + vPosition.x * 2.0);
           
-          float alpha = fresnel * 0.25 * pulse;
+          float alpha = fresnel * 0.2 * pulse;
           
           gl_FragColor = vec4(color, alpha);
         }
@@ -138,6 +177,7 @@ export function Nodes({ positions, mouseInfluence = 0.5 }: NodesProps) {
     if (!nucleusRef.current || !cytoplasmRef.current || !membraneRef.current) return
     
     const time = state.clock.getElapsedTime()
+    nucleusMaterial.uniforms.time.value = time
     cytoplasmMaterial.uniforms.time.value = time
     membraneMaterial.uniforms.time.value = time
     
@@ -166,18 +206,18 @@ export function Nodes({ positions, mouseInfluence = 0.5 }: NodesProps) {
         z += (1 - dist / 4) * 0.3
       }
       
-      // 核（中心）- 一番小さい
+      // 核（中心）- マゼンタ
       dummy.position.set(x, y, z)
       dummy.scale.setScalar(node.size * pulse * 0.5)
       dummy.updateMatrix()
       nucleusRef.current!.setMatrixAt(i, dummy.matrix)
       
-      // 細胞質 - 中間サイズ
+      // 細胞質 - 水色クリスタル
       dummy.scale.setScalar(node.size * pulse * 1.6)
       dummy.updateMatrix()
       cytoplasmRef.current!.setMatrixAt(i, dummy.matrix)
       
-      // 細胞膜 - 一番大きい
+      // 細胞膜 - 薄い水色
       dummy.scale.setScalar(node.size * pulse * 2.8)
       dummy.updateMatrix()
       membraneRef.current!.setMatrixAt(i, dummy.matrix)
@@ -190,7 +230,7 @@ export function Nodes({ positions, mouseInfluence = 0.5 }: NodesProps) {
 
   return (
     <group>
-      {/* 細胞膜（最外層） */}
+      {/* 細胞膜（最外層 - 薄い水色） */}
       <instancedMesh
         ref={membraneRef}
         args={[undefined, undefined, positions.length]}
@@ -199,7 +239,7 @@ export function Nodes({ positions, mouseInfluence = 0.5 }: NodesProps) {
         <sphereGeometry args={[1, 20, 20]} />
       </instancedMesh>
       
-      {/* 細胞質（中間層） */}
+      {/* 細胞質（中間層 - 水色クリスタル） */}
       <instancedMesh
         ref={cytoplasmRef}
         args={[undefined, undefined, positions.length]}
@@ -208,7 +248,7 @@ export function Nodes({ positions, mouseInfluence = 0.5 }: NodesProps) {
         <sphereGeometry args={[1, 16, 16]} />
       </instancedMesh>
       
-      {/* 核（中心） */}
+      {/* 核（中心 - マゼンタ） */}
       <instancedMesh
         ref={nucleusRef}
         args={[undefined, undefined, positions.length]}

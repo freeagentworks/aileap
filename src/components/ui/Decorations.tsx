@@ -5,7 +5,6 @@ import { cn } from '@/lib/utils'
 
 /**
  * 背景グリッド装飾
- * サイバーパンク風のグリッドライン（控えめに）
  */
 export function GridBackground({ className }: { className?: string }) {
   return (
@@ -13,7 +12,7 @@ export function GridBackground({ className }: { className?: string }) {
       {/* 水平線 */}
       <div className="absolute inset-0" style={{
         backgroundImage: `
-          linear-gradient(to bottom, transparent 0%, transparent 49%, rgba(255, 107, 0, 0.02) 50%, transparent 51%, transparent 100%)
+          linear-gradient(to bottom, transparent 0%, transparent 49%, rgba(0, 212, 255, 0.02) 50%, transparent 51%, transparent 100%)
         `,
         backgroundSize: '100% 80px',
       }} />
@@ -21,14 +20,14 @@ export function GridBackground({ className }: { className?: string }) {
       {/* 垂直線 */}
       <div className="absolute inset-0" style={{
         backgroundImage: `
-          linear-gradient(to right, transparent 0%, transparent 49%, rgba(255, 107, 0, 0.02) 50%, transparent 51%, transparent 100%)
+          linear-gradient(to right, transparent 0%, transparent 49%, rgba(0, 212, 255, 0.02) 50%, transparent 51%, transparent 100%)
         `,
         backgroundSize: '80px 100%',
       }} />
       
       {/* 中央の強調線（水平） */}
       <motion.div
-        className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#FF6B00]/15 to-transparent"
+        className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent-blue/15 to-transparent"
         style={{ top: '50%' }}
         initial={{ scaleX: 0, opacity: 0 }}
         animate={{ scaleX: 1, opacity: 1 }}
@@ -37,7 +36,7 @@ export function GridBackground({ className }: { className?: string }) {
       
       {/* 中央の強調線（垂直） */}
       <motion.div
-        className="absolute top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[#FF6B00]/15 to-transparent"
+        className="absolute top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-accent-blue/15 to-transparent"
         style={{ left: '50%' }}
         initial={{ scaleY: 0, opacity: 0 }}
         animate={{ scaleY: 1, opacity: 1 }}
@@ -49,7 +48,6 @@ export function GridBackground({ className }: { className?: string }) {
 
 /**
  * コーナー装飾
- * テクニカルな角の装飾（暖色系）
  */
 export function CornerDecorations({ className }: { className?: string }) {
   const corners = [
@@ -73,9 +71,9 @@ export function CornerDecorations({ className }: { className?: string }) {
           <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
             <path
               d="M0 0 L15 0 L15 2 L2 2 L2 15 L0 15 Z"
-              fill="rgba(255, 107, 0, 0.25)"
+              fill="rgba(0, 212, 255, 0.25)"
             />
-            <circle cx="0" cy="0" r="2" fill="#FF6B00" />
+            <circle cx="0" cy="0" r="2" fill="#00D4FF" />
           </svg>
         </motion.div>
       ))}
@@ -84,14 +82,14 @@ export function CornerDecorations({ className }: { className?: string }) {
 }
 
 /**
- * 光の軌跡アニメーション（暖色系）
+ * 光の軌跡アニメーション
  */
 export function LightTrails({ className }: { className?: string }) {
   return (
     <div className={cn('absolute inset-0 overflow-hidden pointer-events-none', className)}>
-      {/* 上からの光線 - オレンジ */}
+      {/* 上からの光線 - 水色 */}
       <motion.div
-        className="absolute top-0 left-1/4 w-px h-40 bg-gradient-to-b from-[#FF6B00] to-transparent"
+        className="absolute top-0 left-1/4 w-px h-40 bg-gradient-to-b from-[#00D4FF] to-transparent"
         initial={{ y: -160, opacity: 0 }}
         animate={{ 
           y: ['0%', '100vh'],
@@ -105,9 +103,9 @@ export function LightTrails({ className }: { className?: string }) {
         }}
       />
       
-      {/* 右からの光線 - マゼンタ */}
+      {/* 右からの光線 - ピンク */}
       <motion.div
-        className="absolute top-1/3 right-0 w-40 h-px bg-gradient-to-l from-[#FF1493] to-transparent"
+        className="absolute top-1/3 right-0 w-40 h-px bg-gradient-to-l from-[#FF69B4] to-transparent"
         initial={{ x: 160, opacity: 0 }}
         animate={{ 
           x: [0, '-100vw'],
@@ -121,9 +119,9 @@ export function LightTrails({ className }: { className?: string }) {
         }}
       />
       
-      {/* 斜めの光線 - ゴールド */}
+      {/* 斜めの光線 - ターコイズ */}
       <motion.div
-        className="absolute top-0 right-1/3 w-px h-60 bg-gradient-to-b from-[#FFB800]/50 to-transparent origin-top"
+        className="absolute top-0 right-1/3 w-px h-60 bg-gradient-to-b from-[#40E0D0]/50 to-transparent origin-top"
         style={{ transform: 'rotate(30deg)' }}
         initial={{ scaleY: 0, opacity: 0 }}
         animate={{ 
@@ -142,12 +140,12 @@ export function LightTrails({ className }: { className?: string }) {
 }
 
 /**
- * フローティングシェイプ（暖色系アウトライン）
+ * フローティングシェイプ
  */
 export function FloatingShapes({ className }: { className?: string }) {
   return (
     <div className={cn('absolute inset-0 overflow-hidden pointer-events-none', className)}>
-      {/* 六角形 - オレンジ */}
+      {/* 六角形 - 水色 */}
       <motion.div
         className="absolute top-1/4 left-[10%] opacity-20"
         animate={{
@@ -163,14 +161,14 @@ export function FloatingShapes({ className }: { className?: string }) {
         <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
           <polygon
             points="30,0 55,15 55,45 30,60 5,45 5,15"
-            stroke="#FF6B00"
+            stroke="#00D4FF"
             strokeWidth="1"
             fill="none"
           />
         </svg>
       </motion.div>
       
-      {/* 三角形 - マゼンタ */}
+      {/* 三角形 - ピンク */}
       <motion.div
         className="absolute bottom-1/4 right-[15%] opacity-15"
         animate={{
@@ -186,14 +184,14 @@ export function FloatingShapes({ className }: { className?: string }) {
         <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
           <polygon
             points="20,0 40,40 0,40"
-            stroke="#FF1493"
+            stroke="#FF69B4"
             strokeWidth="1"
             fill="none"
           />
         </svg>
       </motion.div>
       
-      {/* 円 - ゴールド */}
+      {/* 円 - ターコイズ */}
       <motion.div
         className="absolute top-1/3 right-[25%] opacity-10"
         animate={{
@@ -210,7 +208,7 @@ export function FloatingShapes({ className }: { className?: string }) {
             cx="40"
             cy="40"
             r="38"
-            stroke="#FFB800"
+            stroke="#40E0D0"
             strokeWidth="1"
             strokeDasharray="4 4"
             fill="none"
@@ -222,16 +220,16 @@ export function FloatingShapes({ className }: { className?: string }) {
 }
 
 /**
- * グロー効果の円（暖色系グラデーション）
+ * グロー効果の円
  */
 export function GlowOrbs({ className }: { className?: string }) {
   return (
     <div className={cn('absolute inset-0 overflow-hidden pointer-events-none', className)}>
-      {/* メインのグロー（マゼンタ/ピンク） */}
+      {/* メインのグロー（水色） */}
       <motion.div
         className="absolute w-[600px] h-[600px] rounded-full"
         style={{
-          background: 'radial-gradient(circle, rgba(255,20,147,0.12) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(0,212,255,0.12) 0%, transparent 70%)',
           top: '20%',
           left: '20%',
           transform: 'translate(-50%, -50%)',
@@ -247,13 +245,13 @@ export function GlowOrbs({ className }: { className?: string }) {
         }}
       />
       
-      {/* サブのグロー（オレンジ） */}
+      {/* サブのグロー（ピンク） */}
       <motion.div
-        className="absolute w-[500px] h-[500px] rounded-full"
+        className="absolute w-[400px] h-[400px] rounded-full"
         style={{
-          background: 'radial-gradient(circle, rgba(255,107,0,0.10) 0%, transparent 70%)',
-          bottom: '10%',
-          right: '10%',
+          background: 'radial-gradient(circle, rgba(255,105,180,0.08) 0%, transparent 70%)',
+          bottom: '20%',
+          right: '15%',
           transform: 'translate(50%, 50%)',
         }}
         animate={{
@@ -268,11 +266,11 @@ export function GlowOrbs({ className }: { className?: string }) {
         }}
       />
       
-      {/* 小さなグロー（ゴールド） */}
+      {/* 小さなグロー（ターコイズ） */}
       <motion.div
         className="absolute w-[200px] h-[200px] rounded-full"
         style={{
-          background: 'radial-gradient(circle, rgba(255,184,0,0.15) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(64,224,208,0.15) 0%, transparent 70%)',
           top: '60%',
           left: '60%',
         }}

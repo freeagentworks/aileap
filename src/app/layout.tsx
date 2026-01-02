@@ -49,6 +49,20 @@ export const metadata: Metadata = {
   authors: [{ name: 'AILEAP' }],
   creator: 'AILEAP',
   publisher: 'AILEAP',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+    other: [
+      { rel: 'android-chrome-192x192', url: '/android-chrome-192x192.png' },
+      { rel: 'android-chrome-512x512', url: '/android-chrome-512x512.png' },
+    ],
+  },
   formatDetection: {
     email: false,
     address: false,
@@ -64,9 +78,9 @@ export const metadata: Metadata = {
       '中小企業・個人事業主向けのAI教育・導入支援サービス。あなたのAI自立をサポートします。',
     images: [
       {
-        url: '/images/og/default.jpg',
-        width: 1200,
-        height: 630,
+        url: '/images/og/default.png',
+        width: 1456,
+        height: 816,
         alt: 'AILEAP - AI教育・導入支援',
       },
     ],
@@ -76,7 +90,7 @@ export const metadata: Metadata = {
     title: 'AILEAP | AI教育・導入支援',
     description:
       '中小企業・個人事業主向けのAI教育・導入支援サービス。あなたのAI自立をサポートします。',
-    images: ['/images/og/default.jpg'],
+    images: ['/images/og/default.png'],
   },
   robots: {
     index: true,

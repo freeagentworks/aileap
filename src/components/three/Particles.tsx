@@ -9,8 +9,8 @@ interface ParticlesProps {
 }
 
 /**
- * 強化版背景パーティクル
- * ニューロン環境をイメージした暖色系
+ * 背景パーティクル
+ * 水色＋ピンクのアクセント
  */
 export function Particles({ count = 500 }: ParticlesProps) {
   const pointsRef = useRef<THREE.Points>(null)
@@ -23,17 +23,16 @@ export function Particles({ count = 500 }: ParticlesProps) {
     const size = new Float32Array(count)
     const col = new Float32Array(count * 3)
     
-    // 暖色系のカラーパレット
-    const color1 = new THREE.Color('#FF6B6B') // 淡い赤/コーラル
-    const color2 = new THREE.Color('#FFB347') // オレンジ
-    const color3 = new THREE.Color('#FFDA77') // ゴールド/イエロー
+    // 水色＋ピンク系のカラーパレット
+    const color1 = new THREE.Color('#00D4FF') // シアン
+    const color2 = new THREE.Color('#40E0D0') // ターコイズ
+    const color3 = new THREE.Color('#87CEEB') // スカイブルー
     const color4 = new THREE.Color('#FFFFFF') // 白
-    const color5 = new THREE.Color('#FFE4E1') // ミスティローズ
+    const color5 = new THREE.Color('#FF69B4') // ホットピンク（アクセント）
     
     for (let i = 0; i < count; i++) {
       const i3 = i * 3
       
-      // 球状 + ランダム分布
       const radius = 5 + Math.random() * 10
       const theta = Math.random() * Math.PI * 2
       const phi = Math.acos(2 * Math.random() - 1)
@@ -48,19 +47,19 @@ export function Particles({ count = 500 }: ParticlesProps) {
       
       size[i] = Math.random() * 1.5 + 0.5
       
-      // 色をランダムに割り当て
+      // 色をランダムに割り当て（水色系メイン、ピンクはアクセント）
       const colorChoice = Math.random()
       let chosenColor
-      if (colorChoice < 0.25) {
-        chosenColor = color1 // コーラル
-      } else if (colorChoice < 0.45) {
-        chosenColor = color2 // オレンジ
-      } else if (colorChoice < 0.65) {
-        chosenColor = color3 // ゴールド
-      } else if (colorChoice < 0.85) {
+      if (colorChoice < 0.3) {
+        chosenColor = color1 // シアン
+      } else if (colorChoice < 0.5) {
+        chosenColor = color2 // ターコイズ
+      } else if (colorChoice < 0.7) {
+        chosenColor = color3 // スカイブルー
+      } else if (colorChoice < 0.9) {
         chosenColor = color4 // 白
       } else {
-        chosenColor = color5 // ミスティローズ
+        chosenColor = color5 // ピンク（アクセント 10%）
       }
       
       col[i3] = chosenColor.r
@@ -71,7 +70,7 @@ export function Particles({ count = 500 }: ParticlesProps) {
     return [pos, vel, size, col]
   }, [count])
 
-  // 遠くの星（静的 - 淡いピンク〜白）
+  // 遠くの星
   const starData = useMemo(() => {
     const starCount = 200
     const pos = new Float32Array(starCount * 3)
@@ -148,7 +147,7 @@ export function Particles({ count = 500 }: ParticlesProps) {
     })
   }, [])
 
-  // 星マテリアル（淡いピンク〜白の瞬き）
+  // 星マテリアル（淡い水色〜白）
   const starMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: {
@@ -177,8 +176,8 @@ export function Particles({ count = 500 }: ParticlesProps) {
           float alpha = 1.0 - smoothstep(0.0, 0.5, dist);
           alpha *= vTwinkle * 0.5;
           
-          // 淡いピンク〜白
-          vec3 color = mix(vec3(1.0, 0.9, 0.95), vec3(1.0), vTwinkle);
+          // 淡い水色〜白
+          vec3 color = mix(vec3(0.9, 0.98, 1.0), vec3(1.0), vTwinkle);
           
           gl_FragColor = vec4(color, alpha);
         }
@@ -197,7 +196,6 @@ export function Particles({ count = 500 }: ParticlesProps) {
     
     if (!pointsRef.current) return
     
-    // パーティクル移動
     const positionAttribute = geometry.attributes.position as THREE.BufferAttribute
     const posArray = positionAttribute.array as Float32Array
     
@@ -223,7 +221,6 @@ export function Particles({ count = 500 }: ParticlesProps) {
     
     positionAttribute.needsUpdate = true
     
-    // 全体回転
     if (pointsRef.current) {
       pointsRef.current.rotation.y = time * 0.015
       pointsRef.current.rotation.x = Math.sin(time * 0.01) * 0.1
