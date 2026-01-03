@@ -14,10 +14,12 @@ interface WorkCardProps {
 }
 
 function WorkCard({ work, index, isInView }: WorkCardProps) {
-  // Microlink APIでスクリーンショットURLを生成
-  const screenshotUrl = work.liveUrl
-    ? `https://api.microlink.io/?url=${encodeURIComponent(work.liveUrl)}&screenshot=true&meta=false&embed=screenshot.url`
-    : null
+  // カスタムサムネイルがあればそれを使用、なければMicrolink APIでスクリーンショット
+  const imageUrl = work.thumbnail && work.thumbnail.length > 0
+    ? work.thumbnail
+    : work.liveUrl
+      ? `https://api.microlink.io/?url=${encodeURIComponent(work.liveUrl)}&screenshot=true&meta=false&embed=screenshot.url`
+      : null
 
   return (
     <motion.article
@@ -28,10 +30,10 @@ function WorkCard({ work, index, isInView }: WorkCardProps) {
     >
       {/* サムネイル */}
       <div className="aspect-video bg-gradient-to-br from-background-elevated to-background relative overflow-hidden">
-        {/* スクリーンショット画像 */}
-        {screenshotUrl && (
+        {/* サムネイル画像 */}
+        {imageUrl && (
           <img
-            src={screenshotUrl}
+            src={imageUrl}
             alt={`${work.title}のスクリーンショット`}
             className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
             loading="lazy"
